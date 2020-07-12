@@ -1,5 +1,6 @@
 import psycopg2
 import psycopg2.extras
+from   psycopg2.extensions import AsIs
 # conn = psycopg2.connect(dbname='overview', user='ymka', 
 #                         password='1w2', host='localhost')
 
@@ -38,8 +39,46 @@ class OverView_db:
 
         return post
 
-    def add_posts(posts):
-        
+    def add_posts(self, posts):
+        cursor = self._cursor
+        conn   = self._connection
+
+        cursor.executemany("""
+            INSERT INTO posts(
+                path_to_image,
+                post_text,
+                post_header,
+                coordinates,
+                posted
+            )
+            VALUES(
+                %(path_to_image)s,
+                %(post_text)s,
+                %(post_header)s,
+                %(coordinates)s,
+                %(posted)s
+            )
+        """, posts)
+
+        conn.commit()
+    
+        return
+
+    def add_post(self, post):
+        cursor = self._cursor
+        conn   = self._connection
+
+        columns = post.keys()
+        values  = [post[column] for column in columns]
+
+        insert_statement = 'insert into posts (%s) values %s'
+        args_str = cursor.mogrify(insert_statement, (AsIs(','.join(columns)), tuple(values)))
+
+        cursor.execute(args_str)
+
+        conn.commit()
+
+        return
 
     def __del__(self):
         self._connection.close()
