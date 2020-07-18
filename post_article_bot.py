@@ -2,7 +2,7 @@
 import telebot
 import telegram
 
-def post_article(bot, id, post):
+def post_article(bot_token, chat_id, post):
 	"""
 	Input:
 	bot - telegram bot
@@ -17,7 +17,8 @@ def post_article(bot, id, post):
 
 	post_text = '<b>{post_header}</b>\n\n{post_text}\n\n{coordinates}'.format(**post)
 
-	bot.send_photo(id,
+	bot = telebot.TeleBot(bot_token)
+	bot.send_photo(chat_id,
 					photo = open(post["path_to_image"], 'rb'),
 					caption = post_text,
 					parse_mode=telegram.ParseMode.HTML

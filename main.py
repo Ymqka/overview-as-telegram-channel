@@ -25,12 +25,11 @@ post = overview_db.get_a_post()
 
 channel_conf = config._sections['telegram']
 
-channel_ID = channel_conf['channel_id']
-token = channel_conf['bot_token']
+channel_id = channel_conf['channel_id']
+bot_token = channel_conf['bot_token']
 
-bot = telebot.TeleBot(TOKEN)
 
-post_article(bot, channel_ID, post)
+post_article(bot_token, channel_id, post)
 
 
 
