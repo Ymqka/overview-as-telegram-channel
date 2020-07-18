@@ -4,3 +4,4 @@ psycopg2
 glob
 configparser
 argparse
+requests==2.13.0
