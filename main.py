@@ -10,7 +10,6 @@ from post_article_bot import post_article
 
 
 
-
 #config
 config = config_parser.parse_config()
 overview_db = OverView_db(config._sections['overview'])
@@ -30,10 +29,3 @@ bot_token = channel_conf['bot_token']
 
 
 post_article(bot_token, channel_id, post)
-
-
-
-
-
-
-

@@ -1,0 +1,6 @@
+python-telegram-bot==12.8
+telegram
+psycopg2
+glob
+configparser
+argparse
