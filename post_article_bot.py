@@ -14,7 +14,6 @@ def post_article(bot_token, chat_id, post):
 	post["coordinates"] - e.g. "41.881944°, -87.627778°"
 	"""
 
-
 	post_text = '<b>{post_header}</b>\n\n{post_text}\n\n{coordinates}'.format(**post)
 
 	bot = telebot.TeleBot(bot_token)
