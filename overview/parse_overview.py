@@ -1,74 +1,102 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from bs4 import BeautifulSoup
+
 import time
 import sys
-import re
 
 import urllib.request
 import shutil
 import requests
 
+import config_parser
 
+for i in range(0,20):
+    print(i)
+
+sys.exit()
+
+
+config = config_parser.parse_config()._sections['parser']
+
+# print(config['daily_url'])
 # sys.exit()
 
-from bs4 import BeautifulSoup
 
 driver = webdriver.Firefox()
 
-driver.get('https://www.over-view.com/daily/')
+driver.get(config['daily_url'])
 
 soup = BeautifulSoup(driver.page_source, 'lxml')
 
+def parse_post_body_from_html(content_html):
+    soup_content = BeautifulSoup(str(content_html), 'lxml')
 
+    post['post_header'] = soup_content.find('h1', class_ ='subheader daily-header').text
+    post['post_text']   = soup_content.find('p',  class_ ='body-copy-small overview-description').text
+    post['coordinates'] = soup_content.find('p',  class_ ='caption overview-geo').text
+    post['posted']      = False
 
-# <a class='nav-menu-link' href='/daily/2'>Next</a>
-    # for text in soup.findAll('h1', class_='subheader daily-header'):
-    #     print(text)
+    return post
 
-# <div class='daily__OverviewContent-sc-7emf19-4 ebZhgG'><h1 id='w-node-0e4a4f7ac915-5940d611' class='subheader daily-header'>Pingyuan Reservoir</h1><p class='body-copy-small overview-description'>Clear blue water fills the Pingyuan Reservoir, located just outside of Zhaodong City in northeastern China. Water stored here serves the more than 100,000 inhabitants of Zhaodong and surrounding farms of Heilongjiang Province, which grow soybeans, maize, wheat, potatoes, beets and flax. For a sense of scale, the Pingyuan Reservoir covers about 1.32 square miles (3.4 square kilometers) — roughly the same area as Central Park in Manhattan.</p><p class='caption overview-geo'>45.995097<!-- -->°,<!-- -->125.985003<!-- -->°<br></p><p class='caption overview-source'>Maxar<br></p><div class='meta-btns'><p class='caption daily-links shop'>Shop</p><p class='caption daily-links'><a href='mailto:?subject=Check out this post on Overview&amp;body=Check out the Pingyuan Reservoir post on Overview: https://www.over-view.com/overviews/pingyuan-reservoir' rel='noopener noreferrer' target='_blank'>Email</a>|<a href='https://www.facebook.com/sharer/sharer.php?u=https://www.over-view.com/overviews/pingyuan-reservoir' rel='noopener noreferrer' target='_blank'>FB</a></p></div></div>
+def parse_link_from_html(link_html):
+    soup_link = BeautifulSoup(str(link_html), 'lxml')
+    
+    url = soup_link.find('a', href=True)['href']
+
+    url_without_params = url.split('?')[0]
+    url_with_proper_params = url_without_params + "?" + config['img_params']
+
+    return [url_without_params, url_with_proper_params]
+
+def download_image(url, path_to_image):
+    response = requests.get(str(url), stream=True)
+
+    with open(path_to_image, 'wb') as out_file:
+        shutil.copyfileobj(response.raw, out_file)
+
+    return
+
+def get_link_info(url_without_params):
+    filename = url_without_params.split('/')[-1]
+    path_to_image = config['img_storage'] + filename
+    epoch_id = filename.split('-')[0]
+
+    return [path_to_image, epoch_id]
+
 
 count_posts = 0
 # total_posts = []
 while True:
-    # posts_content, posts_links, posts
-    # for content_html in soup.findAll('div', class_='daily__OverviewContent-sc-7emf19-4 ebZhgG'):
-    #     soup_content = BeautifulSoup(str(content_html), 'lxml')
+    posts = []
+    for content_html in soup.findAll('div', class_='daily__OverviewContent-sc-7emf19-4 ebZhgG'):
+        post = parse_post_body_from_html(content_html)
 
-    #     post['post_header'] = soup_content.find('h1', class_ ='subheader daily-header').text
-    #     post['post_text']   = soup_content.find('p',  class_ ='body-copy-small overview-description').text
-    #     post['coordinates'] = soup_content.find('p',  class_ ='caption overview-geo').text
-    #     post['posted']      = False
-
-    #     sys.exit()
+        posts.append(post)
+        # sys.exit()
 
 
-
+    links = []
     for link_html in soup.findAll('div', class_='daily__OverviewImg-sc-7emf19-5 eAIJgU'):
-        soup_link = BeautifulSoup(str(link_html), 'lxml')
-        
-        url = soup_link.find('a', href=True)['href']
+        url_without_params, url_with_proper_params = parse_link_from_html(link_html)
 
-        url_without_params = url.split('?')[0]
-        url_with_proper_params = url_without_params + "?w=1920&h=1080&fm=jpg"
-        print(url_with_proper_params)
+        download_image(url_with_proper_params, path_to_image)
 
-        # url = 'https://www.datocms-assets.com/12893/1594948710-pingyuan-reservoir.jpg?w=1920&h=1080&fm=jpg'
-        response = requests.get(url_without_params, stream=True)
+        path_to_image, epoch_id = get_link_info(url_without_params)
 
-
-        filename = url_without_params.split('/')[-1]
-        filepath = "/home/ymka/" + filename
-        print(filepath)
-
-        with open(filepath, 'wb') as out_file:
-            shutil.copyfileobj(response.raw, out_file)
-
+        links.append({
+            "path_to_image": path_to_image,
+            "epoch_id":      epoch_id
+        })
 
         sys.exit()
-        # for a in soup_link.find_all('a', href = True):
-        #     if a.text:
-        #         print(a['href'])
-        # print(soup_link.find('a', href=True).text)
+    if(len(links) == len(posts)):
+        for i in range(0, len(links)):
+                    
+    else:
+        logging.error('length of links and length of posts are not equal')
+
+        
 
 
 
