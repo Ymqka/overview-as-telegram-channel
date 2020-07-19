@@ -30,9 +30,7 @@ driver.get(parser_config['daily_url'])
 
 soup = BeautifulSoup(driver.page_source, 'lxml')
 
-total_posts = []
-
-posts_content_counter = links_counter =  0
+posts_content_counter = links_counter = total_posts_counter = 0
 
 while True:
     posts = []
@@ -66,19 +64,21 @@ while True:
         logging.info('going to sleep 3 secs')
         time.sleep(3)
 
+    posts_to_db = []   
     if(len(links) == len(posts)):
         for i in range(0, len(links)):
             post = {**(posts[i]), **(links[i])}
-            total_posts.append(post)
-            logging.info("succesfully processed " + str(len(posts)) + ' posts')
+            posts_to_db.append(post)
     else:
         logging.error('length of links and length of posts are not equal, url: ' + driver.current_url)
 
     driver.find_element_by_xpath("//*[@id='w-node-e4d10996b7f3-c6b3f613']/a").click()
     soup = BeautifulSoup(driver.page_source, 'lxml')
 
+    total_posts_counter += len(posts_to_db)
+    overview_db.add_posts(posts_to_db)
+
     logging.info('going to sleep 10 secs')
     time.sleep(10)
 
-logging.info('succesfully processed ' + str(len(total_posts)) + ' posts')
-overview_db.add_posts(total_posts)
+logging.info("successfully processed " + total_posts_counter + " posts")
