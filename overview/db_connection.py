@@ -7,6 +7,9 @@ from   psycopg2.extensions import AsIs
 import os
 import glob
 
+import datetime
+from logger import logger
+
 
 class OverView_db:
     def __init__(self, conn_data):
@@ -16,6 +19,7 @@ class OverView_db:
 
 
     def count_posts(self):
+
         cursor = self._cursor
         cursor.execute("select count(*) from posts")
         number_of_posts = list(cursor)[0]['count']
@@ -23,17 +27,14 @@ class OverView_db:
         cursor.execute("select count(*) from posts where posted = FALSE")
         number_of_unposted = list(cursor)[0]['count']
 
-        result = {"Number" : number_of_posts,
+        result = {"Total" : number_of_posts,
                     "not_posted" : number_of_unposted}
 
         return result
 
 
     def delete_all_posts(self):
-        #check = input("Are you sure?\n[Y/n]:")
-        check = True
-        if not check:
-            return
+
         cursor = self._cursor
 
         cursor.execute("Delete from posts *")
@@ -44,14 +45,15 @@ class OverView_db:
         for f in files:
             os.remove(f)
 
-        print("Succesfully deleted all the data")
+        logger("Successfully deleted all the data")
         return
 
 
     def get_a_post(self):   
         #Check is there any post that weren't posted yet
-        if self.count_posts() == 0:
-            #TODO: Make logger
+        count = self.count_posts()
+        if count['not_posted'] == 0:
+            logger('ERROR: No posts left ' + str(count))
             return 
 
         cursor = self._cursor
@@ -67,8 +69,6 @@ class OverView_db:
 
         cursor.execute(get_one_line_query)
         post = cursor.fetchone()
-        if post == None:
-            return None
 
         update_row_query = """
             UPDATE
@@ -83,6 +83,7 @@ class OverView_db:
         cursor.execute(update_row_query, [post_id])
         self._connection.commit()
 
+        logger('Post with id {} was sent to the bot'.format(post_id))
         return post
 
 
@@ -125,6 +126,7 @@ class OverView_db:
         cursor.execute(args_str)
 
         conn.commit()
+        logger("Post {} was successfully added".format("") + str(self.count_posts()))
         return
 
 
