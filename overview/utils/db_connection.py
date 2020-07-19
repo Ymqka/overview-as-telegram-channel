@@ -7,6 +7,7 @@ class OverView_db:
         self._connection = psycopg2.connect(dbname = conn_data['db'], user = conn_data['user'],
                                             password = conn_data['pass'], host = conn_data['host'])
         self._cursor = self._connection.cursor(cursor_factory = psycopg2.extras.RealDictCursor)
+        # self._cursor = self._connection.cursor()
     def get_a_post(self):
         cursor = self._cursor
 
@@ -79,6 +80,29 @@ class OverView_db:
         conn.commit()
 
         return
+
+    def get_not_parsed_posts_epoch_id(self, epoch_ids):
+        cursor = self._cursor
+
+        epoch_ids_str = ','.join(str(x) for x in epoch_ids)
+
+        parsed_posts_epoch_id_query = """
+            select
+                epoch_id
+            from
+                posts
+            where epoch_id in (%s);
+        """ % epoch_ids_str
+
+        cursor.execute(parsed_posts_epoch_id_query, epoch_ids_str)
+        db_epoch_ids = [x['epoch_id'] for x in cursor.fetchall()]
+
+        not_parsed_posts_epoch_id = []
+        for epoch_id in epoch_ids:
+            if epoch_id not in db_epoch_ids:
+                not_parsed_posts_epoch_id.append(epoch_id)
+
+        return not_parsed_posts_epoch_id
 
     def __del__(self):
         self._connection.close()

@@ -13,7 +13,7 @@ args   = utils.parse_arguments()
 config = utils.parse_config(args.config)
 
 logging.basicConfig(
-    filename=config['utils']['log_filepath'],
+    filename='overview.log',
     level=logging.INFO, 
     format= '[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s',
     datefmt='%H:%M:%S'
