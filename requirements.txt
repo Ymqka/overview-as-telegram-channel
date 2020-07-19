@@ -1,3 +1,7 @@
 configparser
 argparse
 psycopg2
+bs4
+selenium
+shutil
+requests
