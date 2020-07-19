@@ -1,5 +1,5 @@
 create table posts (
-    epoch_id INT PRIMARY KEY,
+    epoch_id INT,
     path_to_image TEXT NOT NULL,
     post_text TEXT NOT NULL,
     post_header TEXT NOT NULL,

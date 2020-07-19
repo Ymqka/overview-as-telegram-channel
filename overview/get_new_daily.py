@@ -19,7 +19,7 @@ logging.basicConfig(
     datefmt='%H:%M:%S'
 )
 
-logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
+# logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 overview_db = utils.OverView_db(config['overview'])
 
