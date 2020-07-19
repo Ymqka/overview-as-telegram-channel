@@ -49,21 +49,22 @@ for link_html in soup.findAll('div', class_='daily__OverviewImg-sc-7emf19-5 eAIJ
         "path_to_image": path_to_image,
         "epoch_id":      int(epoch_id)
     })
-    logging.info('going to sleep 3 secs')
 
 if(len(links) == len(posts)):
     for i in range(0, len(links)):
         post = {**(posts[i]), **(links[i])}
         total_posts.append(post)
-        logging.info("succesfully processed " + str(len(posts)) + ' posts')
 else:
     logging.error('length of links and length of posts are not equal, url: ' + driver.current_url)
 
 epoch_id = [x['epoch_id'] for x in total_posts]
 not_parsed_posts_epoch_id = overview_db.get_not_parsed_posts_epoch_id(epoch_id)
 if len(not_parsed_posts_epoch_id) == 0:
-    logging.warn('No new posts found')
+    logging.warning('No new posts found')
     sys.exit()
 
 not_parsed_posts = [post for post in total_posts if post['epoch_id'] in not_parsed_posts_epoch_id]
+for post in not_parsed_posts:
+    logging.info("found unparsed post with " + post['epoch_id'] + " epoch_id ")
+logging.info("found " + str(len(not_parsed_posts)) + " not processed posts" )
 overview_db.add_posts(not_parsed_posts)
