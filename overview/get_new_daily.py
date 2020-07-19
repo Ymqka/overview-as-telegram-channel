@@ -19,6 +19,8 @@ logging.basicConfig(
     datefmt='%H:%M:%S'
 )
 
+logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
+
 overview_db = utils.OverView_db(config['overview'])
 
 parser_config = config['parser']
@@ -48,13 +50,12 @@ for link_html in soup.findAll('div', class_='daily__OverviewImg-sc-7emf19-5 eAIJ
         "epoch_id":      int(epoch_id)
     })
     logging.info('going to sleep 3 secs')
-    time.sleep(3)
 
 if(len(links) == len(posts)):
     for i in range(0, len(links)):
         post = {**(posts[i]), **(links[i])}
         total_posts.append(post)
-        logging.info("succesfully processed " + len(posts) + ' posts')
+        logging.info("succesfully processed " + str(len(posts)) + ' posts')
 else:
     logging.error('length of links and length of posts are not equal, url: ' + driver.current_url)
 

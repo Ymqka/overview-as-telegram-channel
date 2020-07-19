@@ -7,7 +7,6 @@ class OverView_db:
         self._connection = psycopg2.connect(dbname = conn_data['db'], user = conn_data['user'],
                                             password = conn_data['pass'], host = conn_data['host'])
         self._cursor = self._connection.cursor(cursor_factory = psycopg2.extras.RealDictCursor)
-        # self._cursor = self._connection.cursor()
     def get_a_post(self):
         cursor = self._cursor
 
@@ -28,12 +27,12 @@ class OverView_db:
                 posts
             set
                 posted = TRUE
-            WHERE id = %s
+            WHERE epoch_id = %s
         """
 
-        post_id = post['id']
+        epoch_id = post['epoch_id']
 
-        cursor.execute(update_row_query, [post_id])
+        cursor.execute(update_row_query, [epoch_id])
         self._connection.commit()
 
         return post
