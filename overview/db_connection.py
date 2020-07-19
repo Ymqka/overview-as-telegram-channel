@@ -1,8 +1,6 @@
 import psycopg2
 import psycopg2.extras
 from   psycopg2.extensions import AsIs
-# conn = psycopg2.connect(dbname='overview', user='ymka', 
-#                         password='1w2', host='localhost')
 
 class OverView_db:
     def __init__(self, conn_data):
@@ -49,6 +47,7 @@ class OverView_db:
                 post_text,
                 post_header,
                 coordinates,
+                epoch_id,
                 posted
             )
             VALUES(
@@ -56,6 +55,7 @@ class OverView_db:
                 %(post_text)s,
                 %(post_header)s,
                 %(coordinates)s,
+                %(epoch_id)s,
                 %(posted)s
             )
         """, posts)
@@ -83,15 +83,3 @@ class OverView_db:
     def __del__(self):
         self._connection.close()
         self._cursor.close()
-
-
-# cursor = conn.cursor()
-
-# cursor.execute('select * from posts')
-
-# posts = cursor.fetchall()
-
-# print(posts)
-
-# cursor.close()
-# conn.close()
