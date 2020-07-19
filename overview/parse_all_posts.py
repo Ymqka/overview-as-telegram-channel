@@ -19,6 +19,8 @@ logging.basicConfig(
     datefmt='%H:%M:%S'
 )
 
+logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
+
 overview_db = utils.OverView_db(config['overview'])
 
 parser_config = config['parser']
@@ -29,13 +31,19 @@ driver.get(parser_config['daily_url'])
 soup = BeautifulSoup(driver.page_source, 'lxml')
 
 total_posts = []
+
+posts_content_counter = links_counter =  0
+
 while True:
     posts = []
     for content_html in soup.findAll('div', class_='daily__OverviewContent-sc-7emf19-4 ebZhgG'):
         post = parser.parse_post_body_from_html(content_html)
 
+        posts_content_counter += 1
+
         posts.append(post)
 
+    logging.info('processed ' + str(posts_content_counter) + ' posts_content')
 
     links = []
     for link_html in soup.findAll('div', class_='daily__OverviewImg-sc-7emf19-5 eAIJgU'):
@@ -43,21 +51,26 @@ while True:
 
         path_to_image, epoch_id = parser.get_link_info(url_without_params, parser_config['img_storage'])
 
+        logging.info('going to dowload image from ' + str(url_with_proper_params) + ' url to ' + path_to_image)
+
         parser.download_image(url_with_proper_params, path_to_image)
 
         links.append({
             "path_to_image": path_to_image,
             "epoch_id":      int(epoch_id)
         })
+
+        links_counter += 1
+
+        logging.info('processed ' + str(links_counter) + ' links')
         logging.info('going to sleep 3 secs')
         time.sleep(3)
-
 
     if(len(links) == len(posts)):
         for i in range(0, len(links)):
             post = {**(posts[i]), **(links[i])}
             total_posts.append(post)
-            logging.info("succesfully processed " + len(posts) + ' posts')
+            logging.info("succesfully processed " + str(len(posts)) + ' posts')
     else:
         logging.error('length of links and length of posts are not equal, url: ' + driver.current_url)
 
@@ -67,5 +80,5 @@ while True:
     logging.info('going to sleep 10 secs')
     time.sleep(10)
 
-logging.info('succesfully processed ' + len(total_posts) + ' posts')
+logging.info('succesfully processed ' + str(len(total_posts)) + ' posts')
 overview_db.add_posts(total_posts)
