@@ -68,6 +68,6 @@ if len(not_parsed_posts_epoch_id) == 0:
 
 not_parsed_posts = [post for post in total_posts if post['epoch_id'] in not_parsed_posts_epoch_id]
 for post in not_parsed_posts:
-    logging.info("found unparsed post with " + post['epoch_id'] + " epoch_id ")
+    logging.info("found unparsed post with " + str(post['epoch_id']) + " epoch_id ")
 logging.info("found " + str(len(not_parsed_posts)) + " not processed posts" )
 overview_db.add_posts(not_parsed_posts)
