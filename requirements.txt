@@ -1,11 +1,12 @@
 python-telegram-bot==12.8
+pyTelegramBotAPI==0.3.0
 telegram
+telebot
 psycopg2
 argparse
 requests==2.13.0
 configparser
 bs4
 selenium
-shutil
+pytest-shutil
 logger
-boto
