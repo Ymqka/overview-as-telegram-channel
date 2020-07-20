@@ -37,13 +37,13 @@ if number_of_posts['not_posted'] > 0:
 
 	try:
 		utils.post_article(bot_token, channel_id, post)
-
+		logging.info("A post with epoch ID: " + str(post['epoch_id']) + " was succesfully posted")
+		
 	except Exception as e:
 		msg = "Bot failed to post"
 		logging.error(msg, exc_info=e)
 		utils.alert_developers(bot_token, devs_id, msg)
 
-	logging.info("A post with epoch ID: " + post['epoch_id'] + " was succesfully posted")
 else:
 	msg = 'No posts: ' + str(number_of_posts)
 	logging.error(msg)

@@ -45,6 +45,8 @@ for link_html in soup.findAll('div', class_='daily__OverviewImg-sc-7emf19-5 eAIJ
 
     path_to_image, epoch_id = parser.get_link_info(url_without_params, parser_config['img_storage'])
 
+    parser.download_image(url_with_proper_params, path_to_image)
+    
     links.append({
         "path_to_image": path_to_image,
         "epoch_id":      int(epoch_id)

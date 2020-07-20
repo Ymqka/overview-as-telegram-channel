@@ -8,7 +8,7 @@ def post_article(bot_token, chat_id, post):
 
 	bot = telebot.TeleBot(bot_token)
 
-	post_text = '<b>{post_header}</b>\n\n{post_text}\n\n{coordinates}'.format(**post)
+	post_text = '<b>{post_header}</b>\n\n{post_text}\n\n<b>{coordinates}</b>'.format(**post)
 
 	bot.send_photo(chat_id,
 					photo = open(post["path_to_image"], 'rb'),
