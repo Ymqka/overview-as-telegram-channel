@@ -2,11 +2,50 @@ import psycopg2
 import psycopg2.extras
 from   psycopg2.extensions import AsIs
 
+import os
+import glob
+
+
+
+
 class OverView_db:
     def __init__(self, conn_data):
         self._connection = psycopg2.connect(dbname = conn_data['db'], user = conn_data['user'],
                                             password = conn_data['pass'], host = conn_data['host'])
         self._cursor = self._connection.cursor(cursor_factory = psycopg2.extras.RealDictCursor)
+
+
+
+    def count_posts(self):
+
+        cursor = self._cursor
+        cursor.execute("select count(*) from posts")
+        number_of_posts = list(cursor)[0]['count']
+
+        cursor.execute("select count(*) from posts where posted = FALSE")
+        number_of_unposted = list(cursor)[0]['count']
+
+        result = {"Total" : number_of_posts,
+                    "not_posted" : number_of_unposted}
+
+        return result
+
+
+    def delete_all_posts(self):
+
+        cursor = self._cursor
+
+        cursor.execute("Delete from posts *")
+        self._connection.commit()
+
+        #Removes all the images in imgs folder
+        files = glob.glob(os.getcwd()+"/imgs/*")
+        for f in files:
+            os.remove(f)
+
+        return
+
+
     def get_a_post(self):
         cursor = self._cursor
 
@@ -27,15 +66,18 @@ class OverView_db:
                 posts
             set
                 posted = TRUE
+
             WHERE epoch_id = %s
         """
 
         epoch_id = post['epoch_id']
 
         cursor.execute(update_row_query, [epoch_id])
+
         self._connection.commit()
 
         return post
+
 
     def add_posts(self, posts):
         cursor = self._cursor
@@ -64,6 +106,7 @@ class OverView_db:
     
         return
 
+
     def add_post(self, post):
         cursor = self._cursor
         conn   = self._connection
@@ -79,6 +122,7 @@ class OverView_db:
         conn.commit()
 
         return
+
 
     def get_not_parsed_posts_epoch_id(self, epoch_ids):
         cursor = self._cursor
@@ -102,6 +146,8 @@ class OverView_db:
                 not_parsed_posts_epoch_id.append(epoch_id)
 
         return not_parsed_posts_epoch_id
+
+
 
     def __del__(self):
         self._connection.close()
