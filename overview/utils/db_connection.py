@@ -1,14 +1,11 @@
 import psycopg2
 import psycopg2.extras
 from   psycopg2.extensions import AsIs
-# conn = psycopg2.connect(dbname='overview', user='ymka',
-#                         password='1w2', host='localhost')
 
 import os
 import glob
 
-import datetime
-from logger import logger
+
 
 
 class OverView_db:
@@ -45,17 +42,10 @@ class OverView_db:
         for f in files:
             os.remove(f)
 
-        logger("Successfully deleted all the data")
         return
 
 
-    def get_a_post(self):   
-        #Check is there any post that weren't posted yet
-        count = self.count_posts()
-        if count['not_posted'] == 0:
-            logger('ERROR: No posts left ' + str(count))
-            return 
-
+    def get_a_post(self):
         cursor = self._cursor
 
         get_one_line_query = """
@@ -83,7 +73,6 @@ class OverView_db:
         cursor.execute(update_row_query, [post_id])
         self._connection.commit()
 
-        logger('Post with id {} was sent to the bot'.format(post_id))
         return post
 
 
@@ -97,6 +86,7 @@ class OverView_db:
                 post_text,
                 post_header,
                 coordinates,
+                epoch_id,
                 posted
             )
             VALUES(
@@ -104,12 +94,13 @@ class OverView_db:
                 %(post_text)s,
                 %(post_header)s,
                 %(coordinates)s,
+                %(epoch_id)s,
                 %(posted)s
             )
         """, posts)
 
         conn.commit()
-
+    
         return
 
 
@@ -126,22 +117,34 @@ class OverView_db:
         cursor.execute(args_str)
 
         conn.commit()
-        logger("Post {} was successfully added".format("") + str(self.count_posts()))
+
         return
+
+
+    def get_not_parsed_posts_epoch_id(self, epoch_ids):
+        cursor = self._cursor
+
+        epoch_ids_str = ','.join(str(x) for x in epoch_ids)
+
+        parsed_posts_epoch_id_query = """
+            select
+                epoch_id
+            from
+                posts
+            where epoch_id in (%s);
+        """ % epoch_ids_str
+
+        cursor.execute(parsed_posts_epoch_id_query, epoch_ids_str)
+        db_epoch_ids = [x['epoch_id'] for x in cursor.fetchall()]
+
+        not_parsed_posts_epoch_id = []
+        for epoch_id in epoch_ids:
+            if epoch_id not in db_epoch_ids:
+                not_parsed_posts_epoch_id.append(epoch_id)
+
+        return not_parsed_posts_epoch_id
 
 
     def __del__(self):
         self._connection.close()
         self._cursor.close()
-
-
-# cursor = conn.cursor()
-
-# cursor.execute('select * from posts')
-
-# posts = cursor.fetchall()
-
-# print(posts)
-
-# cursor.close()
-# conn.close()

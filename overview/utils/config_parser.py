@@ -1,13 +1,17 @@
 from argparse import ArgumentParser
 import configparser
 
-def parse_config():
+def parse_arguments():
     parser = ArgumentParser()
     parser.add_argument("--config", dest="config")
 
     args = parser.parse_args()
 
-    config = configparser.ConfigParser()
-    config.read(args.config)
+    return args
 
-    return config
+def parse_config(config_path):
+
+    config = configparser.ConfigParser()
+    config.read(config_path)
+
+    return config._sections
