@@ -13,10 +13,10 @@ args   = utils.parse_arguments()
 config = utils.parse_config(args.config)
 
 logging.basicConfig(
-    filename='overview.log',
+    filename = 'overview.log',
     level=logging.INFO, 
-    format= '[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s',
-    datefmt='%H:%M:%S'
+    format= '[%(asctime)s] %(levelname)s - %(message)s {%(pathname)s:%(lineno)d}',
+    datefmt='%Y-%m-%d %H:%M:%S'
 )
 
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
@@ -71,6 +71,9 @@ while True:
             posts_to_db.append(post)
     else:
         logging.error('length of links and length of posts are not equal, url: ' + driver.current_url)
+        bot_token = os.environ['bot_token']
+        devs_id = os.environ['devs_id'].split(',')
+        utils.alert_developers(bot_token, devs_id)
 
     driver.find_element_by_xpath("//*[@id='w-node-e4d10996b7f3-c6b3f613']/a").click()
     soup = BeautifulSoup(driver.page_source, 'lxml')

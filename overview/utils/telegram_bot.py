@@ -17,10 +17,8 @@ def post_article(bot_token, chat_id, post):
 					)
 
 
-def alert_developers(bot_token, devs_id):
-
+def alert_developers(bot_token, devs_id, msg=""):
 	bot = telebot.TeleBot(bot_token)
-
 	for dev_id in devs_id:
-		bot.send_message(dev_id, "ALERT: что-то сломалось")
+		bot.send_message(dev_id, "ALERT: " + msg)
 

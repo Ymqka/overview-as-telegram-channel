@@ -15,8 +15,8 @@ config = utils.parse_config(args.config)
 logging.basicConfig(
     filename = 'overview.log',
     level=logging.INFO, 
-    format= '[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s',
-    datefmt='%H:%M:%S'
+    format= '[%(asctime)s] %(levelname)s - %(message)s {%(pathname)s:%(lineno)d}',
+    datefmt='%Y-%m-%d %H:%M:%S'
 )
 
 # logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
@@ -56,6 +56,9 @@ if(len(links) == len(posts)):
         total_posts.append(post)
 else:
     logging.error('length of links and length of posts are not equal, url: ' + driver.current_url)
+    bot_token = os.environ['bot_token']
+    devs_id = os.environ['devs_id'].split(',')
+    utils.alert_developers(bot_token, devs_id, "length of links and length of posts are not equal")
 
 epoch_id = [x['epoch_id'] for x in total_posts]
 not_parsed_posts_epoch_id = overview_db.get_not_parsed_posts_epoch_id(epoch_id)
