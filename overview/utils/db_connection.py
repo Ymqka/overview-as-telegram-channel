@@ -15,6 +15,7 @@ class OverView_db:
         self._cursor = self._connection.cursor(cursor_factory = psycopg2.extras.RealDictCursor)
 
 
+
     def count_posts(self):
 
         cursor = self._cursor
@@ -65,12 +66,14 @@ class OverView_db:
                 posts
             set
                 posted = TRUE
-            WHERE id = %s
+
+            WHERE epoch_id = %s
         """
 
-        post_id = post['id']
+        epoch_id = post['epoch_id']
 
-        cursor.execute(update_row_query, [post_id])
+        cursor.execute(update_row_query, [epoch_id])
+
         self._connection.commit()
 
         return post
@@ -143,6 +146,7 @@ class OverView_db:
                 not_parsed_posts_epoch_id.append(epoch_id)
 
         return not_parsed_posts_epoch_id
+
 
 
     def __del__(self):

@@ -2,5 +2,4 @@ vscode/
 log/
 __pycache__
 *.log
-.ipynb_checkpoints
-*.ipynb
+
