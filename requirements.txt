@@ -1,0 +1,11 @@
+python-telegram-bot==12.8
+telegram
+psycopg2
+argparse
+requests==2.13.0
+configparser
+bs4
+selenium
+shutil
+logger
+boto
