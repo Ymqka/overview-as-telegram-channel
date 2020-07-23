@@ -12,10 +12,6 @@
 
 ## Team
 
-https://avatars1.githubusercontent.com/u/21110650
-
-https://avatars0.githubusercontent.com/u/38293253
-
 | Ymka (Creator) | Jeltorotik| 
 | :---: |:---:|
 | [![Ymka](https://avatars1.githubusercontent.com/u/21110650?v=3&s=200)](https://github.com/Ymqka)    | [![Jeltorotik](https://avatars0.githubusercontent.com/u/38293253?v=3&s=200)](https://github.com/Jeltorotik) | 
