@@ -1,0 +1,23 @@
+version: '2.0'
+networks:
+  default:
+    external:
+      name: overview
+
+services:
+  overview_pg:
+    image: postgres
+    restart: always
+    volumes:
+      - $HOME/Docker/volumes/postgres:/var/lib/postgresql/data
+    ports:
+      - 4040:5432
+    environment:
+      - POSTGRES_PASSWORD = postgres
+#  overview:
+#    restart: always
+#    image: post_a_post
+#    volumes:
+#      - $HOME/Docker/volumes/overview:/usr/local/share/overview/imgs
+#    depends_on:
+#      - overview_pg

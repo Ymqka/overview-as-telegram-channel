@@ -1,5 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.firefox.options import Options
+
 from bs4 import BeautifulSoup
 
 import time
@@ -25,7 +27,9 @@ overview_db = utils.OverView_db(config['overview'])
 
 parser_config = config['parser']
 
-driver = webdriver.Firefox()
+options = Options()
+options.headless = True
+driver = webdriver.Firefox(options=options)
 driver.get(parser_config['daily_url'])
 
 soup = BeautifulSoup(driver.page_source, 'lxml')
