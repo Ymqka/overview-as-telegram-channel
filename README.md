@@ -5,10 +5,22 @@
 
 > The code daily parses posts, updates database and makes a post in telegram channel https://t.me/overview_en.
 
-> telegram bot, 
-
-
 ![Overview](https://www.datocms-assets.com/12893/1571347390-seo-image..jpg)
+
+## Usage
+
+> parse over-view.com/dialy and update postgres database 
+
+```shell
+$ python3 overview/get_new_daily.py --config conf/overview.ini
+```
+
+> get one random post from postgres database and post it on Telegram channel
+
+```shell
+$ python3 overview/make_new_post.py --config conf/overview.ini
+```
+
 
 ## Team
 
