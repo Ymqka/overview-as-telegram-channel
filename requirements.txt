@@ -2,7 +2,7 @@ python-telegram-bot
 pyTelegramBotAPI
 psycopg2
 argparse
-requests==2.7.0
+requests==2.20.0
 configparser
 bs4
 selenium
